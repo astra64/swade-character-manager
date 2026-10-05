@@ -1,0 +1,57 @@
+<form class="swade-character-manager" id="character-manager">
+  <div class="form-tabs">
+    <!-- Tab 1: Concept -->
+    {{> concept-tab}}
+
+    <!-- Tab 2: Ancestry -->
+    {{> ancestry-tab}}
+
+    <!-- Tab 3: Hindrances -->
+    {{> hindrances-tab}}
+
+    <!-- Tab 4: Traits (Attributes & Skills) -->
+    {{> traits-tab}}
+
+    <!-- Tab 5: Edges -->
+    {{> edges-tab}}
+
+    <!-- Tab 6: Summary -->
+    {{> summary-tab}}
+
+    <!-- Tab 7: Advancement -->
+    {{> advancement-tab}}
+
+    <!-- Tab 8: Manage Gear -->
+    {{> gear-tab}}
+
+    <!-- Sticky Footer with Budget Tracker and Action Buttons -->
+    <div class="character-manager-footer">
+      <div class="budget-tracker">
+        <span class="budget-item">
+          <span class="budget-label">Attributes:</span>
+          <span class="budget-value {{#if (lt attributePointsRemaining 0)}}over-budget{{/if}}">{{attributePointsUsed}}/{{attributePointsMax}}</span>
+        </span>
+        <span class="budget-item">
+          <span class="budget-label">Skills:</span>
+          <span class="budget-value {{#if (lt skillPointsRemaining 0)}}over-budget{{/if}}">{{skillPointsUsed}}/{{skillPointsMax}}</span>
+        </span>
+        <span class="budget-item">
+          <span class="budget-label">Edges:</span>
+          <span class="budget-value {{#if (gt edgePointsUsed edgePointsAvailable)}}over-budget{{/if}}">{{edgePointsUsed}}/{{edgePointsAvailable}}</span>
+        </span>
+        {{#if (gt availablePerkPoints 0)}}
+        <span class="budget-item">
+          <span class="budget-label">Perks:</span>
+          <span class="budget-value {{#if (or (gt perkPointsRemaining 0) (lt perkPointsRemaining 0))}}over-budget{{/if}}">{{perkPointsSpent}}/{{availablePerkPoints}}</span>
+        </span>
+        {{/if}}
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="action-button primary" data-action="save">Save Character</button>
+        <button type="button" class="action-button secondary" data-action="cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+</form>
+

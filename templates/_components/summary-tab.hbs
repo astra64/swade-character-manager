@@ -1,0 +1,82 @@
+<div class="tab {{#if (eq @root.currentTab 'summary')}}active{{/if}}" data-tab="summary">
+  <h3>Summary</h3>
+
+  <div class="tab-content">
+    <div class="guidance-box">
+      <p>{{@root.tabGuidance.summary}}</p>
+    </div>
+
+    <div class="summary-compact">
+      <div class="summary-row">
+        <span class="summary-row-label">Name</span>
+        <span class="summary-row-value">{{#if @root.character.name}}{{@root.character.name}}{{else}}<em>Unnamed</em>{{/if}}{{#if @root.character.archetype}} — {{@root.character.archetype}}{{/if}}</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-row-label">Ancestry{{#if @root.unassignedAncestryChoices}} (<span class="summary-count under-budget">{{@root.unassignedAncestryChoices}} bonus{{#if (gt @root.unassignedAncestryChoices 1)}}es{{/if}} unassigned</span>){{/if}}</span>
+        <span class="summary-row-value">{{#if @root.selectedAncestryData}}{{@root.selectedAncestryData.name}}{{else}}<em>None selected</em>{{/if}}</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-row-label">Attributes (<span class="summary-count {{#if (gt @root.attributePointsUsed @root.attributePointsMax)}}over-budget{{else if (lt @root.attributePointsUsed @root.attributePointsMax)}}under-budget{{/if}}">{{@root.attributePointsUsed}}/{{@root.attributePointsMax}}</span>)</span>
+        <span class="summary-row-value">
+          {{#each (array "agility" "smarts" "spirit" "strength" "vigor") as |attr|}}
+            {{#with (lookup @root.character.attributes attr) as |attrData|}}{{capitalize attr}} {{attrData.die}}{{#unless @last}}, {{/unless}}{{/with}}
+          {{/each}}
+        </span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-row-label">Skills (<span class="summary-count {{#if (gt @root.skillPointsUsed @root.skillPointsMax)}}over-budget{{else if (lt @root.skillPointsUsed @root.skillPointsMax)}}under-budget{{/if}}">{{@root.skillPointsUsed}}/{{@root.skillPointsMax}}</span>)</span>
+        <span class="summary-row-value">
+          {{#if @root.summarySkills.length}}
+            {{#each @root.summarySkills}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+          {{else}}
+            <em>None selected</em>
+          {{/if}}
+        </span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-row-label">Hindrances (<span class="summary-count">{{@root.hindrancePointsUsed}}</span>)</span>
+        <span class="summary-row-value">
+          {{#if (objLength @root.visibleHindrances)}}
+            {{#each @root.visibleHindrances}}{{this.name}} ({{#if this.major}}Major{{else}}Minor{{/if}}){{#unless @last}}, {{/unless}}{{/each}}
+          {{else}}
+            <em>None selected</em>
+          {{/if}}
+        </span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-row-label">Edges (<span class="summary-count {{#if (gt @root.edgePointsUsed @root.edgePointsAvailable)}}over-budget{{else if (lt @root.edgePointsUsed @root.edgePointsAvailable)}}under-budget{{/if}}">{{@root.edgePointsUsed}}/{{@root.edgePointsAvailable}}</span>)</span>
+        <span class="summary-row-value">
+          {{#if (objLength @root.character.edges)}}
+            {{#each @root.character.edges}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}
+          {{else}}
+            <em>None selected</em>
+          {{/if}}
+        </span>
+      </div>
+
+      {{#if @root.activeManualOverrides.length}}
+      <div class="summary-row">
+        <span class="summary-row-label">Manual Adjustments</span>
+        <span class="summary-row-value">
+          {{#each @root.activeManualOverrides}}{{this.label}} {{#if (gt this.amount 0)}}+{{/if}}{{this.amount}}{{#if this.note}} ({{this.note}}){{/if}}{{#unless @last}}, {{/unless}}{{/each}}
+        </span>
+      </div>
+      {{/if}}
+
+      <div class="summary-row">
+        <span class="summary-row-label">Derived Stats</span>
+        <span class="summary-row-value">Pace {{@root.derivedStats.pace}}, Parry {{@root.derivedStats.parry}}, Toughness {{@root.derivedStats.toughness}}</span>
+      </div>
+      <p class="derived-stats-note">{{@root.tabGuidance.derivedStats}}</p>
+    </div>
+
+    <p class="goto-gear-hint">If this is a new character, purchase your starting equipment.</p>
+    <button type="button" class="btn-goto-gear" data-action="goto-gear-tab">Manage Gear</button>
+
+  </div>
+</div>

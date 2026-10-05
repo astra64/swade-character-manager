@@ -1,0 +1,122 @@
+<div class="tab {{#if (eq @root.currentTab 'gear')}}active{{/if}}" data-tab="gear">
+  <h3>Manage Gear</h3>
+
+  <div class="tab-content">
+    <div class="guidance-box gear-tab-guidance-box">
+      <p>{{@root.tabGuidance.gear}}</p>
+      <div class="gear-tab-mode-toggle">
+        <button type="button" class="{{#if (eq @root.character.gearTabMode 'starting')}}active{{/if}}" data-action="set-gear-tab-mode" data-mode="starting">Starting Equipment</button>
+        <button type="button" class="{{#if (eq @root.character.gearTabMode 'management')}}active{{/if}}" data-action="set-gear-tab-mode" data-mode="management">Gear Management</button>
+      </div>
+    </div>
+
+    <!-- Add Gear Section -->
+    <p class="hint-text">Search the dropdown, select an item, and click Add. Or drag items from the compendium browser — picking the same item again just adds another one.</p>
+
+    <div class="form-group">
+      <div class="search-input-row">
+        <div class="search-container">
+          <input type="text" class="search-input gear-search" placeholder="Select Gear..." autocomplete="off">
+          <button type="button" class="btn-clear-search" data-action="clear-gear-search" title="Clear search"></button>
+          <div class="dropdown-menu gear-dropdown-menu"></div>
+        </div>
+        <button type="button" class="btn-add-item" data-action="add-gear">Add</button>
+        <button type="button" class="btn-open-compendium" data-action="open-gear-compendium">Browse</button>
+      </div>
+    </div>
+
+    {{#unless @root.usesCurrency}}
+    <p class="hint-text">This table doesn't use tracked currency (Wealth Die or none) — starting funds and gear budget aren't tracked here; handle that manually.</p>
+    {{/unless}}
+
+    <!-- Selected Gear Display -->
+    {{#each @root.character.gear}}
+    {{#if @first}}
+    <div class="selected-items-section">
+      <h4>Selected Gear</h4>
+    {{/if}}
+      <div class="item-card {{#if this.expanded}}expanded{{/if}}">
+        <!-- Header (Always Visible) -->
+        <div class="item-card-header">
+          <!-- Left side: clickable to expand -->
+          <div class="item-card-expand-trigger" data-action="toggle-gear-expand" data-item-uuid="{{this.uuid}}">
+            <div class="item-card-image-wrapper">
+              {{#if this.img}}
+              <img src="{{this.img}}" alt="{{this.name}}" class="item-card-image">
+              {{/if}}
+            </div>
+            <div class="item-card-info">
+              <span class="item-card-name">{{this.name}}</span>
+              {{#if @root.usesCurrency}}
+              <span class="hint-text">{{this.price}} {{@root.currencyName}}</span>
+              {{/if}}
+              {{#if this.minStr}}
+              <span class="hint-text {{#if (dieLt @root.character.attributes.strength.die this.minStr)}}warning-text{{/if}}">Requires Strength {{this.minStr}} to use without penalty</span>
+              {{/if}}
+            </div>
+          </div>
+
+          <!-- Right side: interactive controls (don't trigger expand) -->
+          <div class="item-card-controls">
+            <div class="gear-qty-controls">
+              <button type="button" class="btn-qty-adjust" data-action="decrement-gear-qty" data-item-uuid="{{this.uuid}}" title="Remove one">-</button>
+              <span class="gear-qty-value">{{this.quantity}}</span>
+              <button type="button" class="btn-qty-adjust" data-action="increment-gear-qty" data-item-uuid="{{this.uuid}}" title="Add one">+</button>
+            </div>
+            <button type="button" class="btn-open-item" data-action="open-gear-item" data-uuid="{{this.uuid}}" title="Open item"></button>
+            <button type="button" class="btn-remove-item" data-action="remove-gear" title="Remove gear"></button>
+          </div>
+        </div>
+
+        <!-- Description (Expandable) -->
+        {{#if this.expanded}}
+        <div class="item-card-description">
+          {{#if this.description}}
+          {{{this.description}}}
+          {{else}}
+          <p class="info-text">No description available.</p>
+          {{/if}}
+        </div>
+        {{/if}}
+      </div>
+    {{#if @last}}
+    </div>
+    {{/if}}
+    {{else}}
+    <p class="hint-text">No gear selected yet.</p>
+    {{/each}}
+
+    <div class="gear-tab-pinned-footer">
+      <span class="budget-label">Carried:</span>
+      <span class="budget-value {{#if @root.overEncumbered}}over-budget{{/if}}">{{@root.carriedWeight}} / {{@root.maxCarryWeight}} {{@root.weightUnitLabel}}</span>
+
+      {{#if @root.usesCurrency}}
+      {{#if (eq @root.character.gearTabMode 'starting')}}
+      <span class="budget-label">Starting {{@root.currencyName}}:</span>
+      <span class="budget-value {{#if (lt @root.gearRemaining 0)}}over-budget{{/if}}">{{@root.gearRemaining}} / {{@root.gearBudget}}</span>
+      <label class="gear-funds-override-toggle" title="Replace the calculated starting funds with a manual number">
+        <input type="checkbox" data-action="toggle-gear-funds-override" {{#if @root.character.showGearFundsOverride}}checked{{/if}}>
+        Override
+      </label>
+      {{#if @root.character.showGearFundsOverride}}
+      <input
+        type="number"
+        class="gear-funds-override-input"
+        data-action="set-gear-funds-override"
+        placeholder="{{@root.gearBudget}}"
+        value="{{@root.gearFundsOverride}}"
+      >
+      {{/if}}
+      {{else}}
+      <span class="budget-label">Current {{@root.currencyName}}:</span>
+      <span class="budget-value">{{@root.currentCurrency}}</span>
+      {{/if}}
+      <label class="gear-currency-apply-toggle" title="Currency only changes on Save if this is checked">
+        <input type="checkbox" data-action="toggle-apply-currency-on-save" {{#if @root.character.applyCurrencyOnSave}}checked{{/if}}>
+        Apply to currency on Save — {{@root.gearCurrencyPreviewText}}
+      </label>
+      <p class="hint-text gear-currency-apply-hint">Leave unchecked to save your build without touching currency.</p>
+      {{/if}}
+    </div>
+  </div>
+</div>

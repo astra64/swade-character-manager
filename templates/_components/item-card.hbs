@@ -1,0 +1,34 @@
+<div class="{{itemClass}} {{#if expanded}}expanded{{/if}}" data-item-uuid="{{uuid}}">
+  <!-- Header (Always Visible) -->
+  <div class="{{itemHeaderClass}}">
+    <!-- Image and Info (Clickable to Expand) -->
+    <div class="{{itemExpandTriggerClass}}" data-action="{{toggleAction}}" data-item-uuid="{{uuid}}">
+      <div class="{{itemImageWrapperClass}}">
+        {{#if img}}
+        <img src="{{img}}" alt="{{name}}" class="{{itemImageClass}}">
+        {{/if}}
+      </div>
+      <div class="{{itemInfoClass}}">
+        <span class="{{itemNameClass}}">{{name}}</span>
+      </div>
+    </div>
+
+    <!-- Controls (Right Side) -->
+    {{#if controls}}
+    <div class="{{controlsClass}}">
+      {{{controls}}}
+    </div>
+    {{/if}}
+  </div>
+
+  <!-- Description (Expandable) -->
+  {{#if expanded}}
+  <div class="{{itemDescriptionClass}}">
+    {{#if description}}
+    {{{description}}}
+    {{else}}
+    <p class="info-text">No description available.</p>
+    {{/if}}
+  </div>
+  {{/if}}
+</div>

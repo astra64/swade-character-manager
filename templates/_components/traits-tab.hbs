@@ -1,0 +1,228 @@
+<div class="tab {{#if (eq @root.currentTab 'traits')}}active{{/if}}" data-tab="traits">
+  <h3>Attributes & Skills</h3>
+  <div class="tab-content">
+    <div class="guidance-box">
+      <p>{{@root.tabGuidance.traits}}</p>
+    </div>
+
+    {{#if (lt @root.attributePointsRemaining 0)}}
+    <div class="info-box warning">
+      <p>You have used too many attribute allocations.</p>
+    </div>
+    {{/if}}
+
+    {{#if (lt @root.skillPointsRemaining 0)}}
+    <div class="info-box warning">
+      <p>You have used too many skill allocations.</p>
+    </div>
+    {{/if}}
+
+    <div class="swade-traits-container">
+      <!-- Left Column: Strength, Agility, Spirit -->
+      <div class="traits-column traits-column-left">
+        {{#each (array "strength" "agility" "spirit") as |attr|}}
+          {{#with (lookup @root.character.attributes attr) as |attrData|}}
+          <div class="attribute-section">
+            {{#if (lookup @root.ancestryBonuses attr)}}
+              <div style="font-size: 0.85em; color: #7a9928; margin-bottom: 0.5em;">{{capitalize attr}} bonus from ancestry</div>
+            {{/if}}
+            <!-- Attribute Header -->
+            <div class="attribute-header">
+              <h3 title="{{lookup @root.attributeDescriptions attr}}">{{capitalize attr}}</h3>
+              <div class="attribute-die-buttons">
+                {{#each (array "d4" "d6" "d8" "d10" "d12") as |die|}}
+                  {{#with (lookup @root.ancestryBonuses attr) as |bonus|}}
+                  <button
+                    type="button"
+                    class="die-btn {{#if (eq attrData.die die)}}active{{/if}}"
+                    data-action="set-attribute"
+                    data-attribute="{{attr}}"
+                    data-die="{{die}}"
+                    {{#if (and bonus (dieLt die bonus.die))}}disabled title="Minimum {{bonus.die}} from ancestry"{{/if}}
+                  >
+                    {{die}}
+                  </button>
+                  {{else}}
+                  <button
+                    type="button"
+                    class="die-btn {{#if (eq attrData.die die)}}active{{/if}}"
+                    data-action="set-attribute"
+                    data-attribute="{{attr}}"
+                    data-die="{{die}}"
+                  >
+                    {{die}}
+                  </button>
+                  {{/with}}
+                {{/each}}
+              </div>
+            </div>
+
+            {{#if (lookup @root.attributeTips attr)}}
+            <div class="attribute-tip">{{lookup @root.attributeTips attr}}</div>
+            {{/if}}
+
+            <!-- Skills under this attribute -->
+            {{#if (lookup @root.skillsByAttribute attr)}}
+              <div class="attribute-skills-group">
+                {{#each (lookup @root.skillsByAttribute attr) as |skill|}}
+                  <div class="skill-item">
+                    <div class="skill-name-wrapper">
+                      {{#if skill.isCoreSkill}}
+                        <span class="skill-core-marker" title="Core skill - starts free at d4">★</span>
+                      {{/if}}
+                      {{#if skill.fromAncestry}}
+                        <span class="skill-ancestry-marker" title="Granted by ancestry - free at its granted die, costs points to raise further, cannot be removed">⬥</span>
+                      {{/if}}
+                      {{#if skill.external}}
+                        <span class="skill-external-marker" title="Not in the configured compendium - detected directly from this actor's own item">⚑</span>
+                      {{/if}}
+                      <span class="skill-name" title="{{stripHtml skill.description}}">{{skill.name}}</span>
+                    </div>
+                    <div class="skill-controls">
+                      {{#if skill.die}}
+                        <select
+                          class="skill-die-select"
+                          data-action="set-skill"
+                          data-skill-uuid="{{skill.uuid}}"
+                        >
+                          {{#each (array "d4" "d6" "d8" "d10" "d12") as |die|}}
+                            <option value="{{die}}" {{#if (eq skill.die die)}}selected{{/if}}>{{die}}</option>
+                          {{/each}}
+                        </select>
+                      {{else}}
+                        <button
+                          type="button"
+                          class="btn-add-skill"
+                          data-action="add-skill"
+                          data-skill-uuid="{{skill.uuid}}"
+                          title="Add skill"
+                        >
+                          +
+                        </button>
+                      {{/if}}
+                      <button
+                        type="button"
+                        class="btn-remove-skill"
+                        data-action="remove-skill"
+                        data-skill-uuid="{{skill.uuid}}"
+                        title="{{#if skill.isCoreSkill}}Core skill—cannot be removed{{else if skill.fromAncestry}}Granted by ancestry—cannot be removed{{else}}Remove skill{{/if}}"
+                        {{#if (or skill.isCoreSkill skill.fromAncestry)}}disabled{{/if}}
+                        {{#unless skill.die}}disabled style="visibility: hidden;"{{/unless}}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            {{/if}}
+          </div>
+          {{/with}}
+        {{/each}}
+      </div>
+
+      <!-- Right Column: Vigor, Smarts -->
+      <div class="traits-column traits-column-right">
+        {{#each (array "vigor" "smarts") as |attr|}}
+          {{#with (lookup @root.character.attributes attr) as |attrData|}}
+          <div class="attribute-section">
+            {{#if (lookup @root.ancestryBonuses attr)}}
+              <div style="font-size: 0.85em; color: #7a9928; margin-bottom: 0.5em;">{{capitalize attr}} bonus from ancestry</div>
+            {{/if}}
+            <!-- Attribute Header -->
+            <div class="attribute-header">
+              <h3 title="{{lookup @root.attributeDescriptions attr}}">{{capitalize attr}}</h3>
+              <div class="attribute-die-buttons">
+                {{#each (array "d4" "d6" "d8" "d10" "d12") as |die|}}
+                  {{#with (lookup @root.ancestryBonuses attr) as |bonus|}}
+                  <button
+                    type="button"
+                    class="die-btn {{#if (eq attrData.die die)}}active{{/if}}"
+                    data-action="set-attribute"
+                    data-attribute="{{attr}}"
+                    data-die="{{die}}"
+                    {{#if (and bonus (dieLt die bonus.die))}}disabled title="Minimum {{bonus.die}} from ancestry"{{/if}}
+                  >
+                    {{die}}
+                  </button>
+                  {{else}}
+                  <button
+                    type="button"
+                    class="die-btn {{#if (eq attrData.die die)}}active{{/if}}"
+                    data-action="set-attribute"
+                    data-attribute="{{attr}}"
+                    data-die="{{die}}"
+                  >
+                    {{die}}
+                  </button>
+                  {{/with}}
+                {{/each}}
+              </div>
+            </div>
+
+            {{#if (lookup @root.attributeTips attr)}}
+            <div class="attribute-tip">{{lookup @root.attributeTips attr}}</div>
+            {{/if}}
+
+            <!-- Skills under this attribute -->
+            {{#if (lookup @root.skillsByAttribute attr)}}
+              <div class="attribute-skills-group">
+                {{#each (lookup @root.skillsByAttribute attr) as |skill|}}
+                  <div class="skill-item">
+                    <div class="skill-name-wrapper">
+                      {{#if skill.isCoreSkill}}
+                        <span class="skill-core-marker" title="Core skill - starts free at d4">★</span>
+                      {{/if}}
+                      {{#if skill.fromAncestry}}
+                        <span class="skill-ancestry-marker" title="Granted by ancestry - free at its granted die, costs points to raise further, cannot be removed">⬥</span>
+                      {{/if}}
+                      {{#if skill.external}}
+                        <span class="skill-external-marker" title="Not in the configured compendium - detected directly from this actor's own item">⚑</span>
+                      {{/if}}
+                      <span class="skill-name" title="{{stripHtml skill.description}}">{{skill.name}}</span>
+                    </div>
+                    <div class="skill-controls">
+                      {{#if skill.die}}
+                        <select
+                          class="skill-die-select"
+                          data-action="set-skill"
+                          data-skill-uuid="{{skill.uuid}}"
+                        >
+                          {{#each (array "d4" "d6" "d8" "d10" "d12") as |die|}}
+                            <option value="{{die}}" {{#if (eq skill.die die)}}selected{{/if}}>{{die}}</option>
+                          {{/each}}
+                        </select>
+                      {{else}}
+                        <button
+                          type="button"
+                          class="btn-add-skill"
+                          data-action="add-skill"
+                          data-skill-uuid="{{skill.uuid}}"
+                          title="Add skill"
+                        >
+                          +
+                        </button>
+                      {{/if}}
+                      <button
+                        type="button"
+                        class="btn-remove-skill"
+                        data-action="remove-skill"
+                        data-skill-uuid="{{skill.uuid}}"
+                        title="{{#if skill.isCoreSkill}}Core skill—cannot be removed{{else if skill.fromAncestry}}Granted by ancestry—cannot be removed{{else}}Remove skill{{/if}}"
+                        {{#if (or skill.isCoreSkill skill.fromAncestry)}}disabled{{/if}}
+                        {{#unless skill.die}}disabled style="visibility: hidden;"{{/unless}}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            {{/if}}
+          </div>
+          {{/with}}
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>

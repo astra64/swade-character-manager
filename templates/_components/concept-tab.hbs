@@ -1,0 +1,24 @@
+<div class="tab {{#if (eq @root.currentTab 'concept')}}active{{/if}}" data-tab="concept">
+  <h3>Concept</h3>
+
+  <div class="tab-content">
+    <div class="guidance-box">
+      <p>{{@root.tabGuidance.concept}}</p>
+    </div>
+
+    <div class="form-group">
+      <label for="name">Character Name</label>
+      <input type="text" id="name" name="name" value="{{@root.character.name}}" placeholder="What is your character's name?" data-action="set-name">
+    </div>
+
+    <div class="form-group">
+      <label for="archetype">Archetype</label>
+      <input type="text" id="archetype" name="archetype" value="{{@root.character.archetype}}" placeholder="e.g., Rogue, Wizard, Ranger" data-action="set-archetype">
+    </div>
+
+    <div class="form-group">
+      <label for="concept">Character Concept</label>
+      <textarea id="concept" name="concept" placeholder="Briefly describe your character concept..." data-action="set-concept">{{@root.character.concept}}</textarea>
+    </div>
+  </div>
+</div>

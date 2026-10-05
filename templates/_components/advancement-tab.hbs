@@ -1,0 +1,64 @@
+<div class="tab {{#if (eq @root.currentTab 'advancement')}}active{{/if}}" data-tab="advancement">
+  <h3>Advancement</h3>
+
+  <div class="tab-content">
+    <div class="guidance-box">
+      <p>{{@root.tabGuidance.advancement}}</p>
+      <ul class="advance-type-list">
+        <li>a new Edge</li>
+        <li>increase two skills below linked attribute</li>
+        <li>increase one skill at or above linked attribute</li>
+        <li>increase an Attribute (once per Rank)</li>
+        <li>reduce or remove a Hindrance</li>
+      </ul>
+      <p>{{@root.tabGuidance.advancementUnlocks}}</p>
+    </div>
+
+    <div class="advancement-rank-row">
+      <div class="summary-row">
+        <span class="summary-row-label">Current Rank</span>
+        <span class="summary-row-value">{{@root.characterRank.name}} ({{@root.totalAdvanceCount}} advance{{#unless (eq @root.totalAdvanceCount 1)}}s{{/unless}} taken)</span>
+      </div>
+      <button type="button" class="btn-add-item" data-action="add-advance">Add Advance</button>
+    </div>
+
+    {{#if @root.attributeAdvanceWarning}}
+    <div class="info-box warning">
+      <p>{{@root.attributeAdvanceWarning}}</p>
+    </div>
+    {{/if}}
+
+    {{#each @root.advanceGroups}}
+    <div class="selected-items-section">
+      <h4>{{this.rankName}}</h4>
+      {{#each this.advances}}
+      <div class="item-card advance-card {{#if this.planned}}planned{{/if}}">
+        <div class="item-card-header">
+          <div class="item-card-info form-group">
+            <select data-action="set-advance-type" data-index="{{this.index}}">
+              <option value="edge" {{#if (eq this.type "edge")}}selected{{/if}}>New Edge</option>
+              <option value="twoSkills" {{#if (eq this.type "twoSkills")}}selected{{/if}}>Raise Two Skills</option>
+              <option value="singleSkill" {{#if (eq this.type "singleSkill")}}selected{{/if}}>Raise One Skill</option>
+              <option value="attribute" {{#if (eq this.type "attribute")}}selected{{/if}}>Raise Attribute</option>
+              <option value="hindrance" {{#if (eq this.type "hindrance")}}selected{{/if}}>Decrease Hindrance</option>
+            </select>
+          </div>
+        </div>
+        <div class="item-card-description form-group">
+          <input type="text" data-action="set-advance-notes" data-index="{{this.index}}" placeholder="Specify details" value="{{this.notes}}">
+        </div>
+        <label class="advance-planned-toggle" title="Planned — recorded but not yet taken; excluded from Rank and budgets until unchecked">
+          <input type="checkbox" data-action="set-advance-planned" data-index="{{this.index}}" {{#if this.planned}}checked{{/if}}>
+          Planned
+        </label>
+        <div class="item-card-controls">
+          <button type="button" class="btn-remove-item" data-action="remove-advance" data-index="{{this.index}}" title="Remove advance"></button>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    <p class="hint-text">No advances recorded yet.</p>
+    {{/each}}
+  </div>
+</div>

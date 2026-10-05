@@ -1,0 +1,25 @@
+{
+  "id": "swade-character-manager",
+  "title": "SWADE Character Manager",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14"
+  },
+  "description": "<p>A guided character creation and advancement tool for the SWADE system. Reads whichever ancestry/skill/edge/hindrance/gear compendiums you already have installed and lets the GM pick which ones to use — bundles no content of its own.</p>",
+  "esmodules": [
+    "scripts/main.js"
+  ],
+  "styles": [
+    "styles/character-manager.css"
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "swade",
+        "type": "system",
+        "compatibility": {}
+      }
+    ]
+  }
+}

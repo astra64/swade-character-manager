@@ -1,0 +1,111 @@
+<div class="tab {{#if (eq @root.currentTab 'edges')}}active{{/if}}" data-tab="edges">
+  <h3>Edges</h3>
+
+  <div class="tab-content">
+    <div class="guidance-box">
+      <p>{{@root.tabGuidance.edges}}</p>
+    </div>
+
+    {{#if (eq @root.edgePointsAvailable 0)}}
+    <div class="info-box">
+      <p>You don't have any edge points yet. Pick "Choose an Edge" as a hindrance trade-off on the Hindrances tab to earn some.</p>
+    </div>
+    {{/if}}
+
+    <!-- Add Edge Section -->
+    <p class="hint-text">Search the dropdown, select an edge, and click Add. Or drag edges from the compendium browser.</p>
+
+    <div class="form-group">
+      <div class="search-input-row">
+        <div class="search-container">
+          <input type="text" class="search-input edges-search" placeholder="Select Edge..." autocomplete="off">
+          <button type="button" class="btn-clear-search" data-action="clear-edges-search" title="Clear search"></button>
+          <div class="dropdown-menu edges-dropdown-menu"></div>
+        </div>
+        <button type="button" class="btn-add-item" data-action="add-edge">Add</button>
+        <button type="button" class="btn-open-compendium" data-action="open-edges-compendium">Browse</button>
+      </div>
+    </div>
+
+    <!-- Selected Edges Display -->
+    {{#each @root.character.edges}}
+    {{#if @first}}
+    <div class="selected-items-section">
+      <h4>Selected Edges — {{objLength @root.character.edges}}/{{@root.edgePointsAvailable}}</h4>
+    {{/if}}
+      <div class="item-card {{#if this.expanded}}expanded{{/if}}">
+        <!-- Header (Always Visible) -->
+        <div class="item-card-header">
+          <!-- Left side: clickable to expand -->
+          <div class="item-card-expand-trigger" data-action="toggle-edge-expand" data-item-uuid="{{this.uuid}}">
+            <div class="item-card-image-wrapper">
+              {{#if this.img}}
+              <img src="{{this.img}}" alt="{{this.name}}" class="item-card-image">
+              {{/if}}
+            </div>
+            <div class="item-card-info">
+              <span class="item-card-name">{{this.name}}</span>
+              {{#if this.requirements.length}}
+              <span class="hint-text">Requires: {{#each this.requirements}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</span>
+              {{/if}}
+            </div>
+          </div>
+
+          <!-- Right side: interactive controls (don't trigger expand) -->
+          <div class="item-card-controls">
+            <button type="button" class="btn-open-item" data-action="open-edge-item" data-uuid="{{this.uuid}}" title="Open item"></button>
+            <button type="button" class="btn-remove-item" data-action="remove-edge" title="Remove edge"></button>
+          </div>
+        </div>
+
+        <!-- Description (Expandable) -->
+        {{#if this.expanded}}
+        <div class="item-card-description">
+          {{#if this.description}}
+          {{{this.description}}}
+          {{else}}
+          <p class="info-text">No description available.</p>
+          {{/if}}
+        </div>
+        {{/if}}
+      </div>
+
+      {{#with (lookup @root.edgeChildItems this.uuid) as |children|}}
+      {{#if children.length}}
+      <div class="granted-items-list {{#if (lookup @root.character.expandedGrantedSections ../uuid)}}expanded{{/if}}">
+        <h4 data-action="toggle-granted-section" data-item-uuid="{{../uuid}}">Granted by {{../name}} ({{children.length}})</h4>
+        {{#if (lookup @root.character.expandedGrantedSections ../uuid)}}
+        {{#each children}}
+        <div class="expandable-item {{#if this.isExpanded}}expanded{{/if}}" data-action="toggle-child-expand" data-item-uuid="{{this.uuid}}">
+          <div class="expandable-item-header">
+            {{#if this.img}}
+            <img src="{{this.img}}" alt="{{this.name}}" class="expandable-item-image">
+            {{/if}}
+            <div class="expandable-item-info">
+              <span class="expandable-item-name">{{this.name}}</span>
+            </div>
+            <button type="button" class="btn-open-item" data-action="open-child-item" data-uuid="{{this.uuid}}" title="Open item"></button>
+          </div>
+          {{#if this.isExpanded}}
+          <div class="expandable-item-description">
+            {{#if this.system.description}}
+            {{{this.system.description}}}
+            {{else}}
+            <p class="info-text">No description available.</p>
+            {{/if}}
+          </div>
+          {{/if}}
+        </div>
+        {{/each}}
+        {{/if}}
+      </div>
+      {{/if}}
+      {{/with}}
+    {{#if @last}}
+    </div>
+    {{/if}}
+    {{else}}
+    <p class="hint-text">No edges selected yet.</p>
+    {{/each}}
+  </div>
+</div>

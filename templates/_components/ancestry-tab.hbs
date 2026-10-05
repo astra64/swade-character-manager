@@ -1,0 +1,125 @@
+<div class="tab {{#if (eq @root.currentTab 'ancestry')}}active{{/if}}" data-tab="ancestry">
+  <h3>Ancestry</h3>
+
+  <div class="tab-content">
+    <div class="guidance-box">
+      <p>{{@root.tabGuidance.ancestry}}</p>
+    </div>
+
+    <!-- Add Ancestry Section -->
+    <p class="hint-text">Search the dropdown, select an ancestry, and click Add. Or drag an ancestry from the compendium browser.</p>
+
+    <div class="form-group">
+      <div class="ancestry-input-inline">
+        <div class="ancestry-search-container">
+          <input type="text" class="ancestry-search" placeholder="Select Ancestry..." autocomplete="off">
+          <button type="button" class="btn-clear-search" data-action="clear-ancestry-search" title="Clear search"></button>
+          <div class="ancestry-dropdown-menu"></div>
+        </div>
+        <button type="button" class="btn-add-ancestry" data-action="add-ancestry">Add</button>
+        <button type="button" class="btn-open-compendium" data-action="open-ancestry-compendium">Browse</button>
+      </div>
+    </div>
+
+    <!-- Selected Ancestry Display -->
+    {{#if @root.character.ancestry}}
+    <div class="selected-ancestry">
+      {{#if @root.selectedAncestryData}}
+      <div class="expandable-item {{#if @root.expandedAncestry}}expanded{{/if}}" data-action="toggle-ancestry-expand" data-item-uuid="{{@root.selectedAncestryData.uuid}}">
+        <div class="expandable-item-header">
+          {{#if @root.selectedAncestryData.img}}
+          <img src="{{@root.selectedAncestryData.img}}" alt="{{@root.selectedAncestryData.name}}" class="expandable-item-image">
+          {{/if}}
+          <div class="expandable-item-info">
+            <span class="expandable-item-name">{{@root.selectedAncestryData.name}}</span>
+          </div>
+          <button type="button" class="btn-open-item" data-action="open-ancestry-item" title="Open item"></button>
+          <button type="button" class="btn-remove-ancestry" data-action="remove-ancestry" title="Remove ancestry"></button>
+        </div>
+        {{#if @root.expandedAncestry}}
+        <div class="expandable-item-description">
+          {{#if @root.selectedAncestryData.system.description}}
+          {{{@root.selectedAncestryData.system.description}}}
+          {{else}}
+          <p class="info-text">No description available.</p>
+          {{/if}}
+        </div>
+        {{/if}}
+      </div>
+      {{#if @root.selectedAncestryData.system.grants}}
+      <div class="granted-items-list">
+        <h4>Ancestral Abilities</h4>
+        {{#each @root.childItemsData}}
+        <div class="expandable-item {{#if this.isExpanded}}expanded{{/if}}" data-action="toggle-child-expand" data-item-uuid="{{this.uuid}}">
+          <div class="expandable-item-header">
+            {{#if this.img}}
+            <img src="{{this.img}}" alt="{{this.name}}" class="expandable-item-image">
+            {{/if}}
+            <div class="expandable-item-info">
+              <span class="expandable-item-name">{{this.name}}</span>
+            </div>
+            <button type="button" class="btn-open-item" data-action="open-child-item" data-uuid="{{this.uuid}}" title="Open item"></button>
+          </div>
+          {{#if this.offersAncestryChoice}}
+          <div class="expandable-item-choice">
+            <label>Bonus granted by this ability:
+              <select data-action="set-ancestry-ability-choice" data-item-uuid="{{this.uuid}}">
+                <option value="" {{#unless (lookup @root.ancestryAbilityChoices this.uuid)}}selected{{/unless}}>None selected yet</option>
+                <option value="edge" {{#if (eq (lookup @root.ancestryAbilityChoices this.uuid) "edge")}}selected{{/if}}>+1 Edge Point</option>
+                <option value="attribute-boost" {{#if (eq (lookup @root.ancestryAbilityChoices this.uuid) "attribute-boost")}}selected{{/if}}>+1 Attribute Point</option>
+                <option value="skill-point" {{#if (eq (lookup @root.ancestryAbilityChoices this.uuid) "skill-point")}}selected{{/if}}>+1 Skill Point</option>
+              </select>
+            </label>
+          </div>
+          {{/if}}
+          {{#if this.isExpanded}}
+          <div class="expandable-item-description">
+            {{#if this.system.description}}
+            {{{this.system.description}}}
+            {{else}}
+            <p class="info-text">No description available.</p>
+            {{/if}}
+          </div>
+          {{/if}}
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+      {{/if}}
+    </div>
+    {{/if}}
+
+    <!-- Manual Adjustments: freeform budget overrides for setting rules/ancestral quirks this
+         app has no built-in support for (e.g. a heritage ability offering a choice of bonuses). -->
+    <div class="manual-budget-overrides">
+      <label class="manual-budget-overrides-toggle">
+        <input type="checkbox" data-action="toggle-manual-budget-overrides" {{#if @root.character.showManualBudgetOverrides}}checked{{/if}}>
+        Manual Adjustments
+      </label>
+      {{#if @root.character.showManualBudgetOverrides}}
+      <p class="hint-text">Add or subtract points from any budget for cases this tool doesn't otherwise handle. Notes appear on the Summary tab.</p>
+      {{#each @root.manualOverrideRows as |row|}}
+      <div class="manual-budget-override-row">
+        <div class="manual-budget-override-label">
+          <span class="manual-budget-override-label-name">{{row.label}}</span>
+          <span class="manual-budget-override-label-hint">({{row.hint}})</span>
+        </div>
+        <div class="manual-budget-override-stepper">
+          <button type="button" class="btn-qty-adjust" data-action="decrement-manual-override" data-pool="{{row.pool}}" title="Subtract one">-</button>
+          <span class="manual-budget-override-amount-value">{{row.amount}}</span>
+          <button type="button" class="btn-qty-adjust" data-action="increment-manual-override" data-pool="{{row.pool}}" title="Add one">+</button>
+        </div>
+        <input
+          type="text"
+          class="manual-budget-override-note"
+          data-action="set-manual-override-note"
+          data-pool="{{row.pool}}"
+          placeholder="Reason (optional)"
+          value="{{row.note}}"
+        >
+      </div>
+      {{/each}}
+      {{/if}}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,161 @@
+<div class="tab {{#if (eq @root.currentTab 'hindrances')}}active{{/if}}" data-tab="hindrances">
+  <h3>Hindrances</h3>
+
+  <div class="tab-content hindrances-tab-wrapper">
+    <div class="hindrances-content">
+      <div class="guidance-box">
+        <p>{{@root.tabGuidance.hindrances}}</p>
+        <p>{{@root.tabGuidance.hindrancesTip}}</p>
+      </div>
+
+      <!-- Add Hindrance Section -->
+      <p class="hint-text">Search the dropdown, select a hindrance, and click Add. Or drag hindrances from the compendium browser.</p>
+
+      {{#if (gt @root.availablePerkPoints 4)}}
+      <div class="info-box warning">
+        <p><strong>Note:</strong> You've selected {{@root.availablePerkPoints}} perk points, but only 4 can be allocated. Choose which 4 to spend below.</p>
+      </div>
+      {{/if}}
+
+      <div class="form-group">
+        <div class="search-input-row">
+          <div class="search-container">
+            <input type="text" class="search-input hindrances-search" placeholder="Select Hindrance..." autocomplete="off">
+            <button type="button" class="btn-clear-search" data-action="clear-hindrances-search" title="Clear search"></button>
+            <div class="dropdown-menu hindrances-dropdown-menu"></div>
+          </div>
+          <button type="button" class="btn-add-item" data-action="add-hindrance">Add</button>
+          <button type="button" class="btn-open-compendium" data-action="open-hindrances-compendium">Browse</button>
+        </div>
+      </div>
+
+      <!-- Selected Hindrances Display (excludes hindrances granted as a child item by a
+           selected edge — those aren't an independent player choice, see visibleHindrances) -->
+      {{#each @root.visibleHindrances}}
+      {{#if @first}}
+      <div class="selected-items-section">
+        <h4>Selected Hindrances</h4>
+      {{/if}}
+        <div class="item-card {{#if this.expanded}}expanded{{/if}}">
+          <!-- Header (Always Visible) -->
+          <div class="item-card-header">
+            <!-- Left side: clickable to expand -->
+            <div class="item-card-expand-trigger" data-action="toggle-hindrance-expand" data-item-uuid="{{this.uuid}}">
+              <div class="item-card-image-wrapper">
+                {{#if this.img}}
+                <img src="{{this.img}}" alt="{{this.name}}" class="item-card-image">
+                {{/if}}
+              </div>
+              <div class="item-card-info">
+                <span class="item-card-name">{{this.name}}</span>
+              </div>
+            </div>
+
+            <!-- Right side: interactive controls (don't trigger expand) -->
+            <div class="item-card-controls">
+              <div class="hindrance-major-minor">
+                <label class="radio-label">
+                  <input type="radio" name="hindrance-{{this.uuid}}-type" value="major" {{#if this.major}}checked{{/if}} {{#if (eq this.severity "minor")}}disabled{{/if}} data-action="set-hindrance-major" data-item-uuid="{{this.uuid}}" class="hindrance-major-toggle">
+                  <span>Major</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="hindrance-{{this.uuid}}-type" value="minor" {{#unless this.major}}checked{{/unless}} {{#if (eq this.severity "major")}}disabled{{/if}} data-action="set-hindrance-minor" data-item-uuid="{{this.uuid}}" class="hindrance-minor-toggle">
+                  <span>Minor</span>
+                </label>
+              </div>
+              <button type="button" class="btn-open-item" data-action="open-hindrance-item" data-uuid="{{this.uuid}}" title="Open item"></button>
+              <button type="button" class="btn-remove-item" data-action="remove-hindrance" title="Remove hindrance"></button>
+            </div>
+          </div>
+
+          <!-- Description (Expandable) -->
+          {{#if this.expanded}}
+          <div class="item-card-description">
+            {{#if this.description}}
+            {{{this.description}}}
+            {{else}}
+            <p class="info-text">No description available.</p>
+            {{/if}}
+          </div>
+          {{/if}}
+        </div>
+
+        {{#with (lookup @root.hindranceChildItems this.uuid) as |children|}}
+        {{#if children.length}}
+        <div class="granted-items-list {{#if (lookup @root.character.expandedGrantedSections ../uuid)}}expanded{{/if}}">
+          <h4 data-action="toggle-granted-section" data-item-uuid="{{../uuid}}">Granted by {{../name}} ({{children.length}})</h4>
+          {{#if (lookup @root.character.expandedGrantedSections ../uuid)}}
+          {{#each children}}
+          <div class="expandable-item {{#if this.isExpanded}}expanded{{/if}}" data-action="toggle-child-expand" data-item-uuid="{{this.uuid}}">
+            <div class="expandable-item-header">
+              {{#if this.img}}
+              <img src="{{this.img}}" alt="{{this.name}}" class="expandable-item-image">
+              {{/if}}
+              <div class="expandable-item-info">
+                <span class="expandable-item-name">{{this.name}}</span>
+              </div>
+              <button type="button" class="btn-open-item" data-action="open-child-item" data-uuid="{{this.uuid}}" title="Open item"></button>
+            </div>
+            {{#if this.isExpanded}}
+            <div class="expandable-item-description">
+              {{#if this.system.description}}
+              {{{this.system.description}}}
+              {{else}}
+              <p class="info-text">No description available.</p>
+              {{/if}}
+            </div>
+            {{/if}}
+          </div>
+          {{/each}}
+          {{/if}}
+        </div>
+        {{/if}}
+        {{/with}}
+      {{#if @last}}
+      </div>
+      {{/if}}
+      {{else}}
+      <p class="hint-text">No hindrances selected. You can add up to 4 points' worth of hindrances to gain bonus points.</p>
+      {{/each}}
+    </div>
+
+    <!-- Hindrances Tab Footer: Perk Point Allocation -->
+    {{#if (gt (objLength @root.visibleHindrances) 0)}}
+    <div class="hindrances-tab-footer">
+      <h4>Allocate Perks — {{@root.perkPointsSpent}}/{{@root.availablePerkPoints}}</h4>
+      <div class="hindrances-tradeoff-slots">
+        {{#each @root.perkSlots}}
+          <div class="tradeoff-slot" data-tradeoff-slot="{{@index}}">
+            <select class="tradeoff-dropdown" data-slot-index="{{@index}}" data-action="set-slot-tradeoff">
+              <option value="" {{#unless this.selected}}selected{{/unless}}>-- Select Perk --</option>
+
+              {{#if (gte this.pointValue 2)}}
+                <option value="attribute-boost" {{#if (eq this.selected "attribute-boost")}}selected{{/if}}>
+                  Raise Attribute (2)
+                </option>
+                <option value="edge" {{#if (eq this.selected "edge")}}selected{{/if}}>
+                  Choose an Edge (2)
+                </option>
+              {{else}}
+                <option value="attribute-boost" disabled>Raise Attribute (2)</option>
+                <option value="edge" disabled>Choose an Edge (2)</option>
+              {{/if}}
+
+              <option value="skill-point" {{#if (eq this.selected "skill-point")}}selected{{/if}}>
+                Gain Skill Point (1)
+              </option>
+              {{#if @root.usesCurrency}}
+                <option value="extra-funds" {{#if (eq this.selected "extra-funds")}}selected{{/if}}>
+                  Extra {{@root.currencyAmount}} {{@root.currencyName}} (1)
+                </option>
+              {{else}}
+                <option value="extra-funds" disabled>Extra Funds (not tracked on this table)</option>
+              {{/if}}
+            </select>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+  </div>
+</div>
