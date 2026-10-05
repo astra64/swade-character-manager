@@ -50,7 +50,7 @@ Registered by `setupCharacterCreationTools()` in `scripts/index.js`:
 
 ## Validation Checklist
 
-Run this after significant code changes and before release.
+Run this after significant code changes and before release. Verified in a live Foundry v14 instance 2026-10-05 (full pass, including items 1-8 below).
 
 1. Module loads in Foundry v14 with no init/ready errors, independent of whether `swade-fantasy-world-kit`/World Setup Tools are installed.
 2. Character Manager opens from the sheet header button on a fresh actor and on one with existing items.
@@ -72,13 +72,14 @@ The above is the full checklist — see [docs/DESIGN_NOTES.md](docs/DESIGN_NOTES
 Documented gaps the first public release ships without, so public users hit a known, documented limitation rather than a silent bug. Listed here (not Descoped) because there's still a reason to revisit them.
 
 - **d12+ traits:** SWADE raises a trait past d12 with a flat modifier (d12+1, d12+2, ...) instead of a new die type. The Traits tab and Advancement only model d4–d12 die steps and have no way to represent the modifier — a character who advances past d12 can't have that captured in the tool. Decided 2026-10-04: descoped from the first public release; the user doesn't personally need it and would rather ship than block on it. Revisit if/when it becomes a real blocker for a GM using the public module, or state it plainly as a known limitation in the public README.
-- **Powers granted by Arcane Background edges:** SWADE's Arcane Background edges (Magic, Miracles, Psionics, Weird Science, Super Powers, etc.) grant Power Points and let the player pick a number of starting Powers, but the Edges tab has no UI to choose or display Powers at all — noticed 2026-10-05 during post-extraction testing. Not yet triaged (unlike d12+, no explicit decision to descope) — revisit before claiming "edge selection" is complete in the public README, since a GM running any magic/powers-using setting will hit this immediately.
+- **Powers granted by Arcane Background edges:** SWADE's Arcane Background edges (Magic, Miracles, Psionics, Weird Science, Super Powers, etc.) grant Power Points and let the player pick a number of starting Powers, but the Edges tab has no UI to choose or display Powers at all — noticed 2026-10-05 during post-extraction testing. Decided 2026-10-05: the public release ships as a **Beta** with this documented as a known limitation (same treatment as d12+ traits) rather than blocking release on it. Revisit as a near-term post-Beta priority, since a GM running any magic/powers-using setting will hit this immediately.
 
 ### Near-Term
 
-1. Write the public README.
+1. ~~Write the public README.~~ Done — see `README.md`.
 2. Create the GitHub repo and push (local-only so far, per project decision — prepare locally first).
-3. Submit to the Foundry package registry.
+3. Submit to the Foundry package registry (as a Beta release, per the known-limitations list above).
+4. Post-Beta: close the Arcane Background Powers gap.
 
 ### Parked
 
