@@ -115,16 +115,23 @@ actor.system.attributes = {
 Die values: 4 (d4), 6 (d6), 8 (d8), 10 (d10), 12 (d12)
 
 ### Actor Skills
+
+**Correction:** SWADE has no `actor.system.skills` map — an earlier draft of this doc described a scaffold structure Character Manager briefly wrote to, not real SWADE data. Skills are embedded **Items** of type `"skill"`, same die shape as attributes:
+
 ```javascript
-actor.system.skills = {
-  [skillUuid]: {
-    die: { modifier: number, sides: number },
-    linkedAttribute: string,  // e.g., "agility", "smarts"
-    // ... other fields
+// actor.items.filter(item => item.type === 'skill')
+skillItem = {
+  name: string,
+  system: {
+    die: { modifier: number, sides: number },  // e.g., { modifier: 0, sides: 8 }
+    attribute: string,  // linked attribute, e.g. "agility", "smarts"
+    description: string,
   },
-  // ... more skills
+  grantedBy: object | null,  // set if granted by ancestry rather than player-selected
 }
 ```
+
+Read from source (`skillItem.toObject().system`, not `skillItem.system`) when detecting a value that will be written back on Save — the latter is derived/post-Active-Effects, and baking a temporary effect in as the new permanent base is the exact bug this avoids (see `CharacterManager._detectSkillsFromActor()`). "Unskilled Attempt" is a catch-all every actor has and is excluded from detection/display entirely.
 
 ---
 
@@ -159,21 +166,9 @@ const fullItem = await getItemPreview(uuid);
 // Returns: Item document with system data, image, description, etc.
 ```
 
-### Available Compendium Packs
-```
-swade-fantasy-world-kit.ancestries-fantasy
-swade-fantasy-world-kit.skills-fantasy
-swade-fantasy-world-kit.edges-fantasy
-swade-fantasy-world-kit.hindrances-fantasy
-swade-fantasy-world-kit.actions-fantasy
-swade-fantasy-world-kit.gear-fantasy
-swade-fantasy-world-kit.weapons-fantasy
-swade-fantasy-world-kit.armor-and-shields-fantasy
-swade-fantasy-world-kit.magic-items-fantasy
-swade-fantasy-world-kit.powers-fantasy
-swade-fantasy-world-kit.armor-sets-fantasy
-swade-fantasy-world-kit.pregens-fantasy
-```
+### Compendium Packs
+
+**Correction:** an earlier draft of this doc listed a hardcoded set of `swade-fantasy-world-kit.*-fantasy` packs as "the" available compendiums — that was the pre-v0.8.0 design. There is no hardcoded pack list anymore. The GM approves a flat list of installed compendium packs via the **Compendium Sources** picker (`CompendiumPackSelector`); `getPackIdsForCategory()` in `compendium-utils.js` then finds which approved packs actually contain a given category's item type(s) by scanning their own content — a pack isn't assigned to a category by the GM. If the GM hasn't approved anything, every installed Item compendium is scanned instead. The only hardcoded default is the official SWADE Core Rules module's own packs (`CORE_RULES_DEFAULT_PACK_IDS`), used as the approved list's starting value — never this kit's own Fantasy packs.
 
 ---
 

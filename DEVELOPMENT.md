@@ -61,7 +61,7 @@ Run this after significant code changes and before release.
 7. Compendium Sources picker opens, saves, and "Reset to Core Rules Defaults" works.
 8. An actor with pre-extraction data (flags under the old `swade-fantasy-world-kit` namespace) migrates correctly on first open (see `migrateLegacyActorFlags()`).
 
-Full tab-by-tab detail lives in [docs/v0.6.0/CHARACTER_MANAGER.md](docs/v0.6.0/CHARACTER_MANAGER.md) Milestone 5; the above is the quick pass.
+The above is the full checklist — see [docs/DESIGN_NOTES.md](docs/DESIGN_NOTES.md) for the design rationale behind the Gear tab's currency modes, the Advancement tab's data model, and the customization-safe-save behavior it all depends on.
 
 ---
 
