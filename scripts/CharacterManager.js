@@ -1486,23 +1486,19 @@ export class CharacterManager extends FormApplication {
   }
 
   /**
-   * Convert our attribute format ({die: 'd6', advances: 0}) to flat dot-notation updates
-   * targeting SWADE's actual schema shape (system.attributes.<name>.die is a
-   * {sides, modifier} SchemaField, not a plain string — writing the string directly gets
-   * silently dropped by Foundry's data model validation, which is why attribute die changes
-   * weren't persisting). Dot-notation patches only the `sides` leaf, leaving `modifier` (and
-   * any other sibling fields on that attribute, like smarts' `animal`) untouched — a nested
-   * {die: {sides}} object risked being treated as a full replacement of the `die` sub-schema.
+   * Convert our attribute format ({die: 'd6', advances: 0}) into flat dot-notation updates for
+   * SWADE's real schema (system.attributes.<name>.die is a {sides, modifier} SchemaField, not a
+   * plain string — writing the string directly is silently dropped by Foundry's validation, which
+   * is why attribute die changes weren't persisting). Dot-notation also patches only the `sides`
+   * leaf, so sibling fields (`modifier`, smarts' `animal`, etc.) are left untouched — a nested
+   * {die: {sides}} object risked replacing the whole `die` sub-schema instead.
    *
-   * `attrData.die` is the character's *effective* die (raw base + any ancestry floor already
-   * folded in by applyAncestryAttributeFloors, for display/editing). When an attribute's floor
-   * comes from an ADD-mode Active Effect (e.g. an ancestry's own transfer effect adding +2
-   * sides), that effect re-applies on top of whatever we write as the base — so writing the
-   * effective die verbatim would double the bonus (source becomes floor, then the effect adds
-   * the floor's worth again). Subtracting the ADD bonus back out here restores the correct base,
-   * so the actor's own effect is the only thing granting it. OVERRIDE-mode (or unrecognized-mode)
-   * bonuses aren't touched — an override ignores the base value entirely, so writing the
-   * effective die there doesn't double anything.
+   * `attrData.die` is the *effective* die (raw base + any ancestry floor, folded in by
+   * applyAncestryAttributeFloors for display/editing). An ADD-mode ancestry bonus (e.g. a transfer
+   * effect adding +2 sides) re-applies on top of whatever base we write, so writing the effective
+   * die verbatim would double it — subtracting the ADD bonus back out here restores the correct
+   * base so the actor's own effect is the only thing granting it. OVERRIDE-mode (or unrecognized)
+   * bonuses are left alone, since an override ignores the base value entirely and can't double.
    *
    * @param {Object} attributes - this.character.attributes
    * @param {Object} [ancestryBonuses] - See getAncestryAttributeBonuses; from this._ancestryBonuses

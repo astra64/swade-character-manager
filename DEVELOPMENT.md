@@ -74,13 +74,6 @@ Documented gaps the first public release ships without, so public users hit a kn
 - **d12+ traits:** SWADE raises a trait past d12 with a flat modifier (d12+1, d12+2, ...) instead of a new die type. The Traits tab and Advancement only model d4–d12 die steps and have no way to represent the modifier — a character who advances past d12 can't have that captured in the tool. Decided 2026-10-04: descoped from the first public release; the user doesn't personally need it and would rather ship than block on it. Revisit if/when it becomes a real blocker for a GM using the public module, or state it plainly as a known limitation in the public README.
 - **Powers granted by Arcane Background edges:** SWADE's Arcane Background edges (Magic, Miracles, Psionics, Weird Science, Super Powers, etc.) grant Power Points and let the player pick a number of starting Powers, but the Edges tab has no UI to choose or display Powers at all — noticed 2026-10-05 during post-extraction testing. Decided 2026-10-05: the public release ships as a **Beta** with this documented as a known limitation (same treatment as d12+ traits) rather than blocking release on it. Revisit as a near-term post-Beta priority, since a GM running any magic/powers-using setting will hit this immediately.
 
-### Near-Term
-
-1. ~~Write the public README.~~ Done — see `README.md`.
-2. Create the GitHub repo and push (local-only so far, per project decision — prepare locally first).
-3. Submit to the Foundry package registry (as a Beta release, per the known-limitations list above).
-4. Post-Beta: close the Arcane Background Powers gap.
-
 ### Parked
 
 - **ApplicationV2 migration** (deferred to the v16 era): `CharacterManager` still uses V1 `FormApplication`. Decided 2026-10-04 to ship the public extraction on V1 rather than migrate all 9 tabs first; deprecation warnings are tolerable until v16 approaches. See the hub module's [docs/APPLICATIONV2_MIGRATION.md](../swade-fantasy-world-kit/docs/APPLICATIONV2_MIGRATION.md) (a general reference, not hub-specific).

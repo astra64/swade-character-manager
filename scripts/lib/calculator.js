@@ -492,29 +492,23 @@ export function calculateTotalAttributePoints(character, ancestryBonuses = {}) {
 const SIDES_TO_DIE = { 4: 'd4', 6: 'd6', 8: 'd8', 10: 'd10', 12: 'd12' };
 
 /**
- * Reconstruct each attribute's effective die from its ancestry-granted bonus (see
- * getAncestryAttributeBonuses), for an attribute value that was read from the actor's *source*
- * data (i.e. excludes every Active Effect, including the ancestry's own transfer effect and any
- * unrelated temporary condition like an injury) — see CharacterManager's initial character-state
- * load. Mutates and returns character.attributes in place.
+ * Reconstruct each attribute's effective die from its ancestry bonus (see
+ * getAncestryAttributeBonuses) on top of the actor's *source* die (no Active Effects, so no
+ * injuries/temp conditions baked in — see CharacterManager's initial load). Mutates
+ * character.attributes in place.
  *
- * An ADD-mode bonus (e.g. an ancestry's own transfer effect adding +2 sides) is never present in
- * source at all — CharacterManager._attributesToUpdateData deliberately subtracts it back out
- * before saving, so the actor's own effect is the sole thing granting it and it doesn't get
- * double-applied. So for ADD-mode bonuses this *adds* the bonus back to reconstruct the effective
- * die the player actually sees in-game, rather than treating it as a floor.
+ * ADD-mode bonuses (e.g. an ancestry's transfer effect) are never in source —
+ * _attributesToUpdateData subtracts them back out at save so the actor's own effect is the sole
+ * grantor — so here we add them back to show the real in-game die, not treat it as a floor.
  *
- * Called on every render, but adding the same bonus again on every call would ratchet the die up
- * indefinitely (die is the effective, already-bonused value from the render that follows) — this
- * is not idempotent the way a floor/minimum is, so each attribute's own `attrData` object tracks
- * how many sides it was last given credit for adding (`_ancestryAddSides`), and only adjusts when
- * that amount actually changes (first load, or the ancestry itself changed/was removed this
- * session), leaving an unrelated later render or the player's own die-button click untouched.
+ * This runs every render and die is already-bonused from the prior call, so naively re-adding
+ * would ratchet forever. Each attrData tracks sides last credited (`_ancestryAddSides`) and only
+ * adjusts when that amount changes (first load, or ancestry picked/changed/removed) — leaving
+ * other renders and manual die-button clicks untouched.
  *
- * OVERRIDE-mode (or any other/unrecognized-mode) bonuses aren't subtracted at save, so source
- * already reflects them if the player raised the attribute — for those this keeps the previous
- * floor/minimum behavior: raise up to the bonus only if the current value is below it, and never
- * lower a value the player explicitly picked above it.
+ * OVERRIDE-mode (or unrecognized) bonuses aren't subtracted at save, so source already reflects
+ * them — these keep the old floor behavior: raise to the bonus if below it, never lower a
+ * player-chosen higher value.
  *
  * @param {Object} character - Character object with attributes
  * @param {Object} [ancestryBonuses] - Map of attrName to {die, mode} from getAncestryAttributeBonuses
